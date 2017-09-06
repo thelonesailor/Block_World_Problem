@@ -1,9 +1,5 @@
 :- use_module(library(lists)).
-:- set_prolog_flag(answer_write_options,
-                   [ quoted(true),
-                     portray(true),
-                     spacing(next_argument)
-                   ]).
+:- set_prolog_flag(answer_write_options,[quoted(true),portray(true),spacing(next_argument)]).
 
 gsp(S,G,P) :-
     list_to_set(S,SS),
@@ -20,7 +16,6 @@ gsp(S,[G|Gs],P,S4):-
 %% write(S),write(G),nl,
     find(G,S,O),
     pop(O,Pre,D,A),
-    %% member(G,A),
     gsp(S,Pre,P1,S1),
     apply(S1,A,D,S2),
     gsp(S2,Gs,P2,S3),
@@ -28,8 +23,6 @@ gsp(S,[G|Gs],P,S4):-
     gsp(S3,[G],P3,S4),
     append(P1,[O|P2],P_),
     append(P_,P3,P).
-
-    %% append(P1,[O|P2],P).
 
 findon(X,[on(X,Y)|_],Y).
 findon(X,[_|L],Y):-findon(X,L,Y).
@@ -47,7 +40,6 @@ find(hold(X),S,unstack(X,Y)):-findon(X,S,Y).
 find(hold(X),_,pick_up(X)).
 find(ae,S,put_down(Y)):-findholding(S,Y).
 
-%% :-member(ontable(X),S).
 
 %% pre,del,add
 pop(stack(X,Y),
@@ -85,7 +77,9 @@ ltp([X],X,[clear(X)]).
 ltp([X|L],X,[on(Last,X)|P]):-ltp(L,Last,P).
 
 
-solve(Initial,Goal,Plan):-state_to_pred(Initial,IPL),state_to_pred(Goal,GPL),write(IPL),write(GPL),gsp(IPL,GPL,Plan).
+solve(Initial,Goal,Plan):-state_to_pred(Initial,IPL),state_to_pred(Goal,GPL),write(IPL),nl,write(GPL),nl,gsp(IPL,GPL,Plan),!.
 
-%% initial_st([ontable(b),on(c,a),ontable(a),clear(b),clear(c)]).
-%% goal_st([clear(a),on(a,b),on(b,c),ontable(c)]).
+?- solve([[x,y],[z,w]],[[x,z],[w,y]],P),write(P),nl,nl.
+?- solve([[x,y],[w,z]],[[z,x],[w,y]],P),write(P),nl,nl.
+?- solve([[x,y],[z],[w]],[[z,x],[y,w]],P),write(P),nl,nl.
+?- solve([[a],[c,e],[b,d]],[[e],[c,a],[b,d]],P),write(P),nl,nl.
