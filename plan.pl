@@ -15,7 +15,7 @@ gsp(S,[G|Gs],P,S1) :-
 gsp(S,[G|Gs],P,S4):-
 %% write(S),write(G),nl,
     find(G,S,O),
-    pop(O,Pre,D,A),
+    operator(O,Pre,D,A),
     gsp(S,Pre,P1,S1),
     apply(S1,A,D,S2),
     gsp(S2,Gs,P2,S3),
@@ -42,19 +42,19 @@ find(ae,S,put_down(Y)):-findholding(S,Y).
 
 
 %% pre,del,add
-pop(stack(X,Y),
+operator(stack(X,Y),
     [clear(Y),hold(X)],
     [hold(X),clear(Y)],
     [on(X,Y),ae]).
-pop(put_down(X),
+operator(put_down(X),
     [hold(X)],
     [hold(X)],
     [ontable(X),ae]).
-pop(pick_up(X),
+operator(pick_up(X),
     [ontable(X),clear(X),ae],
     [ontable(X),ae],
     [hold(X)]).
-pop(unstack(X,Y),
+operator(unstack(X,Y),
     [on(X,Y),clear(X),ae],
     [on(X,Y),ae],
     [hold(X),clear(Y)]).
@@ -62,23 +62,27 @@ pop(unstack(X,Y),
 
 holds([],_).
 holds([Pre|Ps],S) :- select(Pre,S,S1), holds(Ps,S1).
-apply(S,A,D,S1) :-
-    subtract(S,D,S2), union(S2,A,S1).
+
+%% Delets Del from S and adds Add to S.
+apply(S,Add,Del,S1):-subtract(S,Del,S2), union(S2,Add,S1).
 
 
-state_to_pred([],[ae]).
-state_to_pred([H|A],List):-list_to_pred(H,L),state_to_pred(A,P),union(L,P,List).
+state_to_predicate([],[ae]).
+state_to_predicate([H|A],List):-list_to_predicate(H,L),state_to_predicate(A,P),union(L,P,List).
 
-list_to_pred([],[]).
-list_to_pred([X],[ontable(X)|P]):-ltp([X],_,P).
-list_to_pred([X|L],[ontable(X)|P]):-ltp([X|L],_,P).
+list_to_predicate([],[]).
+list_to_predicate([X],[ontable(X)|P]):-ltp([X],_,P).
+list_to_predicate([X|L],[ontable(X)|P]):-ltp([X|L],_,P).
 
 ltp([X],X,[clear(X)]).
 ltp([X|L],X,[on(Last,X)|P]):-ltp(L,Last,P).
 
 
-solve(Initial,Goal,Plan):-state_to_pred(Initial,IPL),state_to_pred(Goal,GPL),write(IPL),nl,write(GPL),nl,gsp(IPL,GPL,Plan),!.
+solve(Initial,Goal,Plan):-state_to_predicate(Initial,Initial_List),state_to_predicate(Goal,Goal_List),
+						write(Initial_List),nl,write(Goal_List),nl,
+						gsp(Initial_List,Goal_List,Plan),!.
 
+%%Queries
 ?- solve([[x,y],[z,w]],[[x,z],[w,y]],P),write(P),nl,nl.
 ?- solve([[x,y],[w,z]],[[z,x],[w,y]],P),write(P),nl,nl.
 ?- solve([[x,y],[z],[w]],[[z,x],[y,w]],P),write(P),nl,nl.
