@@ -1,6 +1,9 @@
 :- use_module(library(lists)).
 :- set_prolog_flag(answer_write_options,[quoted(true),portray(true),spacing(next_argument)]).
 
+%% gsp - can rename?
+%% States are lists of predicates
+%% Start, Goal, Plan
 gsp(S,G,P) :-
     list_to_set(S,SS),
     list_to_set(G,GS),
@@ -14,10 +17,12 @@ gsp(S,[G|Gs],P,S1) :-
 
 gsp(S,[G|Gs],P,S4):-
 %% write(S),write(G),nl,
+    %% Find operator O to get from start state S to satisfy sub goal G
     find(G,S,O),
-    operator(O,Pre,D,A),
+    %% Get Pre, Del, Add
+    operator(O,Pre,Del,Add),
     gsp(S,Pre,P1,S1),
-    apply(S1,A,D,S2),
+    apply(S1,Add,Del,S2),
     gsp(S2,Gs,P2,S3),
 
     gsp(S3,[G],P3,S4),
@@ -50,10 +55,12 @@ operator(put_down(X),
     [hold(X)],
     [hold(X)],
     [ontable(X),ae]).
+%% clear(X) in del list?
 operator(pick_up(X),
     [ontable(X),clear(X),ae],
     [ontable(X),ae],
     [hold(X)]).
+%% clear(X) in del list?
 operator(unstack(X,Y),
     [on(X,Y),clear(X),ae],
     [on(X,Y),ae],
@@ -87,3 +94,4 @@ solve(Initial,Goal,Plan):-state_to_predicate(Initial,Initial_List),state_to_pred
 ?- solve([[x,y],[w,z]],[[z,x],[w,y]],P),write(P),nl,nl.
 ?- solve([[x,y],[z],[w]],[[z,x],[y,w]],P),write(P),nl,nl.
 ?- solve([[a],[c,e],[b,d]],[[e],[c,a],[b,d]],P),write(P),nl,nl.
+?- solve([[b],[a,c]],[[c,b,a]],P),write(P),nl,nl.
