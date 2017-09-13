@@ -4,12 +4,15 @@
 %% gsp - can rename?
 %% States are lists of predicates
 %% Start, Goal, Plan
+%% Grand Solver of Programs
 gsp(S,G,P) :-
     list_to_set(S,SS),
     list_to_set(G,GS),
     gsp(SS,GS,P,_).
 
 gsp(S,G,[],S) :- holds(G,S).
+%% Goal state should be a substate of S1
+%% Cut takes care of multiple solution
 gsp(S,[G|Gs],P,S1) :-
     holds([G],S),!,
     gsp(S,Gs,P,S1).
@@ -21,7 +24,9 @@ gsp(S,[G|Gs],P,S4):-
     find(G,S,O),
     %% Get Pre, Del, Add
     operator(O,Pre,Del,Add),
+    %% After satisfying Pre, state S1 comes
     gsp(S,Pre,P1,S1),
+
     apply(S1,Add,Del,S2),
     gsp(S2,Gs,P2,S3),
 
@@ -66,17 +71,17 @@ operator(unstack(X,Y),
     [on(X,Y),ae],
     [hold(X),clear(Y)]).
 
-
+%% Check if arg1 is a subset of arg2
 holds([],_).
 holds([Pre|Ps],S) :- select(Pre,S,S1), holds(Ps,S1).
 
 %% Delets Del from S and adds Add to S.
 apply(S,Add,Del,S1):-subtract(S,Del,S2), union(S2,Add,S1).
 
-
+%% Generate predicates for input configuration
 state_to_predicate([],[ae]).
 state_to_predicate([H|A],List):-list_to_predicate(H,L),state_to_predicate(A,P),union(L,P,List).
-
+%% Generate predicates for one 'tower'
 list_to_predicate([],[]).
 list_to_predicate([X],[ontable(X)|P]):-ltp([X],_,P).
 list_to_predicate([X|L],[ontable(X)|P]):-ltp([X|L],_,P).
@@ -94,4 +99,5 @@ solve(Initial,Goal,Plan):-state_to_predicate(Initial,Initial_List),state_to_pred
 ?- solve([[x,y],[w,z]],[[z,x],[w,y]],P),write(P),nl,nl.
 ?- solve([[x,y],[z],[w]],[[z,x],[y,w]],P),write(P),nl,nl.
 ?- solve([[a],[c,e],[b,d]],[[e],[c,a],[b,d]],P),write(P),nl,nl.
+%% Sussman anomaly
 ?- solve([[b],[a,c]],[[c,b,a]],P),write(P),nl,nl.
