@@ -1,6 +1,29 @@
 :- use_module(library(lists)).
 :- set_prolog_flag(answer_write_options,[quoted(true),portray(true),spacing(next_argument)]).
 
+%% append two lists
+%% append([], L, L).
+%% append(L, [], L).
+%% append([A|L1], L2, [A|L]) :- append(L1, L2, L).
+
+%% is A in list?
+in_list(A, [A|L]).
+in_list(A, [B|L]) :- in_list(A, L).
+
+union([], L, L).
+union(L, [], L).
+%% X is in L2
+union([X|L1], L2, L) :- in_list(X, L2), union(L1, L2, L).
+%% X is not in L2
+union([X|L1], L2, [X|L]) :- union(L1, L2, L).
+
+
+subtract(L, [], L).
+subtract([X|L1], L2, L) :- in_list(X, L2), subtract(L1, L2, L).
+subtract([X|L1], L2, [X|L]) :- subtract(L1, L2, L).
+
+%% subtract([X|L1], [Y|L2], L) :- subtract(L1, )
+
 %% gsp - can rename?
 %% States are lists of predicates
 %% Start, Goal, Plan
@@ -13,7 +36,7 @@ gsp(S,G,P) :-
 gsp(S,G,[],S) :- holds(G,S).
 %% Goal state should be a substate of S1
 %% Cut takes care of multiple solution
-gsp(S,[G|Gs],P,S1) :-
+gsp(S,[G|Gs],Ps,S1) :-
     holds([G],S),!,
     gsp(S,Gs,P,S1).
 
