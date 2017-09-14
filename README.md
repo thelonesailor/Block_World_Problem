@@ -17,10 +17,23 @@ The operations are:
 	put_down(X):	The robot arm was holding X and will put it on the table.
 	pick_up(X):		The robot arm will pick up X from the table and hold it.
 
-The state is represented as a list of lists, where each list represents one pile of blocks.
+The state is represented as a list of lists, where each list represents one pile/'tower' of blocks.
 
 For example, [[y,x],[w,z,u],[v]] represents the state
 
 	  	u	
 	x	z	
 	y	w	v
+
+So, for example to go from state
+
+		e
+	a 	c 	f
+	b 	d 	g
+
+to state
+
+		f
+	a	c 	b
+	g	d 	e
+
