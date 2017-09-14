@@ -7,17 +7,17 @@ append([A|L1], L2, [A|L]) :- append(L1, L2, L).
 
 %% find element in a list
 in_list(A, [B|L]) :- A \= B, in_list(A, L).
-in_list(A, [A|L]).
+in_list(A, [A|_]).
 
-%% FInd union of two lists
+%% FInd union of two sets
 union([], L, L).
 %% X is in L2
 union([X|L1], L2, L) :- in_list(X, L2), union(L1, L2, L).
 %% X is not in L2
 union([X|L1], L2, [X|L]) :- \+ in_list(X, L2), union(L1, L2, L).
 
-%% Subtract one list form another
-subtract([], Ls, []).
+%% Subtract one set form another
+subtract([],_, []).
 subtract([X|L1], L2, L) :- in_list(X, L2), subtract(L1, L2, L).
 subtract([X|L1], L2, [X|L]) :- \+ in_list(X, L2), subtract(L1, L2, L).
 
