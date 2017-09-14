@@ -19,13 +19,29 @@ The operations are:
 
 The state is represented as a list of lists, where each list represents one pile/'tower' of blocks.
 
-For example, [[y,x],[w,z,u],[v]] represents the state
+For example, [[y, x], [w, z, u], [v]] represents the state
 
 	  	u	
 	x	z	
 	y	w	v
 
-So, for example to go from state
+where [y, x] correponds to the leftmost tower,
+
+	x
+	y
+
+[w, z, u] corresponds to the middle tower,
+
+	u
+	z
+	w
+
+and [v] corresponds to the rightmost tower
+
+	v
+
+
+So, for example, to go from state
 
 		e
 	a 	c 	f
@@ -37,5 +53,14 @@ to state
 	a	c 	b
 	g	d 	e
 
-call
-solve([[b,a],[d,c,e],[g,f]],[[g,a],[d,c,f],[e,b]],Plan).
+just run:
+	
+	swipl plan.pl
+
+and then enter the query:
+	
+	solve([[b, a], [d, c, e], [g, f]], [[g, a], [d, c, f], [e, b]], P), write(P), nl, nl.
+
+The plan to solve the query will be output as:
+	
+	[unstack(f, g), put_down(f), unstack(a, b), stack(a, g), unstack(e, c), put_down(e), pick_up(f), stack(f, c), pick_up(b), stack(b, e)].
