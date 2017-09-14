@@ -37,3 +37,5 @@ to state
 	a	c 	b
 	g	d 	e
 
+call
+solve([[b,a],[d,c,e],[g,f]],[[g,a],[d,c,f],[e,b]],Plan).
