@@ -5,8 +5,8 @@ append([], L, L).
 append([A|L1], L2, [A|L]) :- append(L1, L2, L).
 
 %% Find element in a list
-in_list(A, [B|L]) :- A \= B, in_list(A, L).
 in_list(A, [A|_]).
+in_list(A, [B|L]) :- in_list(A, L).
 
 %% FInd union of two sets
 union([], L, L).
